@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校园宿舍智能报修与服务评价系统 - 管理后台</title>
+    <!-- Element Plus CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
+    <!-- ECharts -->
+    <script src="https://unpkg.com/echarts@5.5.0/dist/echarts.min.js"></script>
+    <style>
+        :root {
+            --primary: #1677FF;
+            --primary-light: #E6F4FF;
+            --success: #52C41A;
+            --warning: #FAAD14;
+            --danger: #FF4D4F;
+            --text: #262626;
+            --text-secondary: #8C8C8C;
+            --bg: #F5F5F5;
+            --card-bg: #FFFFFF;
+            --border: #F0F0F0;
+            --sidebar-bg: #001529;
+            --sidebar-width: 220px;
+            --header-height: 60px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-size: 14px;
+            color: var(--text);
+            background: var(--bg);
+        }
+
+        #app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* 左侧菜单 */
+        .sidebar {
+            width: var(--sidebar-width);
+            min-width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .sidebar-logo {
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-logo .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .sidebar-logo .logo-text {
+            font-size: 16px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            padding: 8px 0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            color: rgba(255,255,255,0.65);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            border-left: 3px solid transparent;
+            text-decoration: none;
+        }
+
+        .menu-item:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.08);
+        }
+
+        .menu-item.active {
+            color: #fff;
+            background: var(--primary);
+            border-left-color: #fff;
+        }
+
+        .menu-item .menu-icon { font-size: 18px; width: 20px; text-align: center; }
+
+        .sidebar-footer {
+            padding: 16px 24px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 12px;
+            color: rgba(255,255,255,0.3);
+        }
+
+        /* 主内容区 */
+        .main-area {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: var(--header-height);
+            background: #fff;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .topbar-left {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .topbar-user {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .topbar-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        /* 统计卡片 */
+        .stat-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+        }
+
+        .stat-card .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .stat-card .stat-icon.blue { background: #E6F4FF; color: #1677FF; }
+        .stat-card .stat-icon.green { background: #F6FFED; color: #52C41A; }
+        .stat-card .stat-icon.orange { background: #FFF7E6; color: #FAAD14; }
+        .stat-card .stat-icon.red { background: #FFF1F0; color: #FF4D4F; }
+
+        .stat-card .stat-info .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .stat-card .stat-info .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        /* 页面标题 */
+        .page-header {
+            margin-bottom: 20px;
+        }
+
+        .page-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .page-header p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* 卡片 */
+        .card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text);
+        }
+
+        /* 图表区 */
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .chart-box {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+        }
+
+        .chart-box .chart-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 300px;
+        }
+
+        /* 筛选栏 */
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        /* 状态标签 */
+        .status-tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-PENDING { background: #FFF7E6; color: #D48806; border: 1px solid #FFD591; }
+        .status-ASSIGNED { background: #E6F4FF; color: #0958D9; border: 1px solid #91CAFF; }
+        .status-REPAIRING { background: #E6F4FF; color: #0958D9; border: 1px solid #91CAFF; }
+        .status-COMPLETED { background: #F6FFED; color: #389E0D; border: 1px solid #B7EB8F; }
+        .status-EVALUATED { background: #FAFAFA; color: #8C8C8C; border: 1px solid #D9D9D9; }
+        .status-CANCELLED { background: #FFF1F0; color: #CF1322; border: 1px solid #FFA39E; }
+
+        /* 表格内操作按钮 */
+        .table-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .table-actions .el-button {
+            padding: 4px 12px;
+            font-size: 12px;
+        }
+
+        /* 登录页 */
+        .login-overlay {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #1677FF 0%, #0958D9 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+
+        .login-card {
+            width: 380px;
+            background: #fff;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+        }
+
+        .login-card .login-logo {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .login-card .login-logo .icon {
+            width: 56px;
+            height: 56px;
+            background: var(--primary);
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+
+        .login-card .login-logo h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .login-card .login-logo p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* 评分星星 */
+        .rating-stars {
+            color: var(--warning);
+            font-size: 14px;
+        }
+
+        /* 差评行高亮 */
+        .bad-review-row {
+            background: #FFF1F0 !important;
+        }
+
+        /* 弹窗内搜索选择 */
+        .repairer-select-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+        }
+
+        .repairer-select-item .match-score {
+            font-size: 12px;
+            color: var(--primary);
+        }
+
+        .repairer-select-item .match-score.low {
+            color: var(--warning);
+        }
+
+        /* 响应式 */
+        @media (max-width: 1200px) {
+            .stat-cards { grid-template-columns: repeat(2, 1fr); }
+            .chart-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <!-- 登录页 -->
+    <div v-if="!isLoggedIn" class="login-overlay">
+        <div class="login-card">
+            <div class="login-logo">
+                <div class="icon">🏠</div>
+                <h2>校园宿舍智能报修系统</h2>
+                <p>管理后台登录</p>
+            </div>
+            <el-form :model="loginForm" :rules="loginRules" ref="loginFormRef" @keyup.enter="handleLogin">
+                <el-form-item prop="username">
+                    <el-input v-model="loginForm.username" placeholder="请输入管理员账号" size="large" prefix-icon="User" />
+                </el-form-item>
+                <el-form-item prop="password">
+                    <el-input v-model="loginForm.password" type="password" placeholder="请输入密码" size="large" prefix-icon="Lock" show-password />
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" size="large" style="width:100%;" @click="handleLogin" :loading="loginLoading">登 录</el-button>
+                </el-form-item>
+            </el-form>
+            <div style="text-align:center;font-size:12px;color:#8C8C8C;margin-top:16px;">
+                演示账号：admin / 123456
+            </div>
+        </div>
+    </div>
+
+    <!-- 主界面 -->
+    <template v-if="isLoggedIn">
+        <!-- 左侧菜单 -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-icon">🏠</div>
+                <span class="logo-text">报修管理系统</span>
+            </div>
+            <nav class="sidebar-menu">
+                <div v-for="item in menuItems" :key="item.key"
+                     class="menu-item"
+                     :class="{ active: currentMenu === item.key }"
+                     @click="switchMenu(item.key)">
+                    <span class="menu-icon">{{ item.icon }}</span>
+                    <span>{{ item.label }}</span>
+                </div>
+            </nav>
+            <div class="sidebar-footer">© 2026 湖南工业大学</div>
+        </aside>
+
+        <!-- 主内容区 -->
+        <div class="main-area">
+            <!-- 顶部导航 -->
+            <header class="topbar">
+                <div class="topbar-left">{{ currentPageTitle }}</div>
+                <div class="topbar-right">
+                    <span style="font-size:13px;color:#8C8C8C;">{{ currentTime }}</span>
+                    <el-dropdown @command="handleUserCommand">
+                        <div class="topbar-user">
+                            <div class="topbar-avatar">A</div>
+                            <span style="font-size:13px;">管理员</span>
+                            <el-icon><ArrowDown /></el-icon>
+                        </div>
+                        <template #dropdown>
+                            <el-dropdown-menu>
+                                <el-dropdown-item command="logout">退出登录</el-dropdown-item>
+                            </el-dropdown-menu>
+                        </template>
+                    </el-dropdown>
+                </div>
+            </header>
+
+            <!-- 内容区 -->
+            <div class="content">
+                <!-- 仪表盘 -->
+                <template v-if="currentMenu === 'dashboard'">
+                    <div class="page-header">
+                        <h2>仪表盘</h2>
+                        <p>系统运行数据概览</p>
+                    </div>
+
+                    <div class="stat-cards">
+                        <div class="stat-card">
+                            <div class="stat-icon blue">📋</div>
+                            <div class="stat-info">
+                                <div class="stat-value">{{ stats.totalOrders }}</div>
+                                <div class="stat-label">总报修数</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon green">✅</div>
+                            <div class="stat-info">
+                                <div class="stat-value">{{ stats.completedOrders }}</div>
+                                <div class="stat-label">已完成</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon orange">📊</div>
+                            <div class="stat-info">
+                                <div class="stat-value">{{ stats.completionRate }}%</div>
+                                <div class="stat-label">完成率</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon red">⭐</div>
+                            <div class="stat-info">
+                                <div class="stat-value">{{ stats.avgRating }}</div>
+                                <div class="stat-label">平均评分</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-grid">
+                        <div class="chart-box">
+                            <div class="chart-title">报修趋势（近7天）</div>
+                            <div class="chart-container" id="trendChart"></div>
+                        </div>
+                        <div class="chart-box">
+                            <div class="chart-title">报修类型分布</div>
+                            <div class="chart-container" id="typeChart"></div>
+                        </div>
+                        <div class="chart-box">
+                            <div class="chart-title">维修人员工作量</div>
+                            <div class="chart-container" id="workloadChart"></div>
+                        </div>
+                        <div class="chart-box">
+                            <div class="chart-title">满意度分布</div>
+                            <div class="chart-container" id="satisfactionChart"></div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top:20px;">
+                        <div class="card-title">最近工单</div>
+                        <el-table :data="recentOrders" style="width:100%;" size="small">
+                            <el-table-column prop="orderNo" label="编号" width="180" />
+                            <el-table-column prop="repairType" label="类型" width="80" />
+                            <el-table-column prop="location" label="位置" width="140" />
+                            <el-table-column label="状态" width="100">
+                                <template #default="{ row }">
+                                    <span class="status-tag" :class="'status-' + row.status">{{ statusMap[row.status] }}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column prop="repairerName" label="维修人员" width="100">
+                                <template #default="{ row }">{{ row.repairerName || '-' }}</template>
+                            </el-table-column>
+                            <el-table-column prop="createTime" label="提交时间" width="170" />
+                        </el-table>
+                    </div>
+                </template>
+
+                <!-- 工单管理 -->
+                <template v-if="currentMenu === 'orders'">
+                    <div class="page-header">
+                        <h2>工单管理</h2>
+                        <p>管理全部报修工单</p>
+                    </div>
+                    <div class="card">
+                        <div class="filter-bar">
+                            <el-select v-model="orderFilter.status" placeholder="工单状态" clearable style="width:140px;" @change="loadOrders">
+                                <el-option label="待派单" value="PENDING" />
+                                <el-option label="已派单" value="ASSIGNED" />
+                                <el-option label="维修中" value="REPAIRING" />
+                                <el-option label="已完成" value="COMPLETED" />
+                                <el-option label="已评价" value="EVALUATED" />
+                                <el-option label="已取消" value="CANCELLED" />
+                            </el-select>
+                            <el-select v-model="orderFilter.repairType" placeholder="报修类型" clearable style="width:140px;" @change="loadOrders">
+                                <el-option label="水电" value="水电" />
+                                <el-option label="木工" value="木工" />
+                                <el-option label="空调" value="空调" />
+                                <el-option label="网络" value="网络" />
+                                <el-option label="门窗" value="门窗" />
+                                <el-option label="其他" value="其他" />
+                            </el-select>
+                            <el-button type="primary" @click="loadOrders">查询</el-button>
+                            <el-button @click="resetOrderFilter">重置</el-button>
+                        </div>
+                        <el-table :data="orders" style="width:100%;" v-loading="orderLoading" size="small">
+                            <el-table-column prop="orderNo" label="编号" width="180" />
+                            <el-table-column prop="repairType" label="类型" width="80" />
+                            <el-table-column prop="location" label="位置" width="140" />
+                            <el-table-column prop="description" label="描述" min-width="160" show-overflow-tooltip />
+                            <el-table-column label="状态" width="100">
+                                <template #default="{ row }">
+                                    <span class="status-tag" :class="'status-' + row.status">{{ statusMap[row.status] }}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column prop="repairerName" label="维修人员" width="100">
+                                <template #default="{ row }">{{ row.repairerName || '-' }}</template>
+                            </el-table-column>
+                            <el-table-column prop="createTime" label="提交时间" width="170" />
+                            <el-table-column label="操作" width="180" fixed="right">
+                                <template #default="{ row }">
+                                    <div class="table-actions">
+                                        <el-button v-if="row.status === 'PENDING'" type="primary" size="small" @click="showAssignDialog(row)">派单</el-button>
+                                        <el-button v-if="row.status === 'ASSIGNED'" type="warning" size="small" @click="showReassignDialog(row)">改派</el-button>
+                                        <el-button v-if="row.status === 'ASSIGNED' || row.status === 'REPAIRING'" size="small" @click="urgeOrder(row)">催办</el-button>
+                                        <el-button v-if="row.status !== 'COMPLETED' && row.status !== 'EVALUATED' && row.status !== 'CANCELLED'" type="danger" size="small" @click="cancelOrder(row)">取消</el-button>
+                                    </div>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                        <div style="margin-top:16px;display:flex;justify-content:flex-end;">
+                            <el-pagination
+                                v-model:current-page="orderPage"
+                                v-model:page-size="orderSize"
+                                :total="orderTotal"
+                                :page-sizes="[10, 20, 50]"
+                                layout="total, sizes, prev, pager, next"
+                                @change="loadOrders"
+                            />
+                        </div>
+                    </div>
+                </template>
+
+                <!-- 人员管理 -->
+                <template v-if="currentMenu === 'repairers'">
+                    <div class="page-header">
+                        <h2>人员管理</h2>
+                        <p>管理维修人员信息</p>
+                    </div>
+                    <div class="card">
+                        <div class="filter-bar">
+                            <el-input v-model="repairerFilter.name" placeholder="搜索姓名" clearable style="width:160px;" @change="loadRepairers" />
+                            <el-select v-model="repairerFilter.area" placeholder="负责区域" clearable style="width:140px;" @change="loadRepairers">
+                                <el-option label="东苑" value="东苑" />
+                                <el-option label="西苑" value="西苑" />
+                                <el-option label="南苑" value="南苑" />
+                                <el-option label="北苑" value="北苑" />
+                            </el-select>
+                            <el-button type="primary" @click="loadRepairers">查询</el-button>
+                            <el-button type="primary" @click="showRepairerDialog()" style="margin-left:auto;">+ 新增人员</el-button>
+                        </div>
+                        <el-table :data="repairers" style="width:100%;" v-loading="repairerLoading" size="small">
+                            <el-table-column prop="name" label="姓名" width="100" />
+                            <el-table-column prop="jobNumber" label="工号" width="100" />
+                            <el-table-column prop="phone" label="电话" width="130" />
+                            <el-table-column label="技能" min-width="160">
+                                <template #default="{ row }">
+                                    <el-tag v-for="skill in (row.skills || '').split(',')" :key="skill"
+                                            size="small" style="margin-right:4px;" type="info">{{ skill }}</el-tag>
+                                </template>
+                            </el-table-column>
+                            <el-table-column prop="area" label="区域" width="80" />
+                            <el-table-column label="评分" width="100">
+                                <template #default="{ row }">
+                                    <span class="rating-stars">★ {{ row.rating || '5.0' }}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column label="负载" width="100">
+                                <template #default="{ row }">{{ row.currentLoad || 0 }} / {{ row.maxLoad || 10 }}</template>
+                            </el-table-column>
+                            <el-table-column label="状态" width="80">
+                                <template #default="{ row }">
+                                    <span :style="{display:'inline-block',width:'8px',height:'8px',borderRadius:'50%',marginRight:'6px',background: row.status === 1 ? '#52C41A' : '#D9D9D9'}"></span>
+                                    {{ row.status === 1 ? '在岗' : '离岗' }}
+                                </template>
+                            </el-table-column>
+                            <el-table-column label="操作" width="140" fixed="right">
+                                <template #default="{ row }">
+                                    <div class="table-actions">
+                                        <el-button type="primary" size="small" link @click="showRepairerDialog(row)">编辑</el-button>
+                                        <el-button type="danger" size="small" link @click="deleteRepairer(row)">删除</el-button>
+                                    </div>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                        <div style="margin-top:16px;display:flex;justify-content:flex-end;">
+                            <el-pagination
+                                v-model:current-page="repairerPage"
+                                v-model:page-size="repairerSize"
+                                :total="repairerTotal"
+                                :page-sizes="[10, 20, 50]"
+                                layout="total, sizes, prev, pager, next"
+                                @change="loadRepairers"
+                            />
+                        </div>
+                    </div>
+                </template>
+
+                <!-- 统计分析 -->
+                <template v-if="currentMenu === 'statistics'">
+                    <div class="page-header">
+                        <h2>统计分析</h2>
+                        <p>多维度数据统计与可视化</p>
+                    </div>
+                    <div class="card" style="margin-bottom:20px;">
+                        <div class="filter-bar">
+                            <el-date-picker
+                                v-model="statsDateRange"
+                                type="daterange"
+                                range-separator="至"
+                                start-placeholder="开始日期"
+                                end-placeholder="结束日期"
+                                value-format="YYYY-MM-DD"
+                                style="width:260px;"
+                            />
+                            <el-button-group>
+                                <el-button size="small" @click="quickDate('7d')">近7天</el-button>
+                                <el-button size="small" @click="quickDate('30d')">近30天</el-button>
+                                <el-button size="small" @click="quickDate('90d')">近90天</el-button>
+                            </el-button-group>
+                            <el-button type="primary" @click="refreshStats">查询</el-button>
+                            <el-button style="margin-left:auto;" @click="exportExcel">导出Excel</el-button>
+                        </div>
+                    </div>
+
+                    <div class="stat-cards">
+                        <div class="stat-card">
+                            <div class="stat-icon blue">📋</div>
+                            <div class="stat-info">
+                                <div class="stat-value">{{ stats.totalOrders }}</div>
+                                <div class="stat-label">总报修数</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon green">✅</div>
+                            <div class="stat-info">
+                                <div class="stat-value">{{ stats.completedOrders }}</div>
+                                <div class="stat-label">已完成</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon orange">📊</div>
+                            <div class="stat-info">
+                                <div class="stat-value">{{ stats.completionRate }}%</div>
+                                <div class="stat-label">完成率</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon red">⭐</div>
+                            <div class="stat-info">
+                                <div class="stat-value">{{ stats.avgRating }}</div>
+                                <div class="stat-label">平均评分</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-grid">
+                        <div class="chart-box">
+                            <div class="chart-title">报修趋势</div>
+                            <div class="chart-container" id="statsTrendChart"></div>
+                        </div>
+                        <div class="chart-box">
+                            <div class="chart-title">类型占比</div>
+                            <div class="chart-container" id="statsTypeChart"></div>
+                        </div>
+                        <div class="chart-box">
+                            <div class="chart-title">人员工作量</div>
+                            <div class="chart-container" id="statsWorkloadChart"></div>
+                        </div>
+                        <div class="chart-box">
+                            <div class="chart-title">评分分布</div>
+                            <div class="chart-container" id="statsSatisfactionChart"></div>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- 评价管理 -->
+                <template v-if="currentMenu === 'evaluations'">
+                    <div class="page-header">
+                        <h2>评价管理</h2>
+                        <p>查看和管理服务评价</p>
+                    </div>
+                    <div class="card">
+                        <div class="filter-bar">
+                            <el-select v-model="evalFilter.rating" placeholder="评分筛选" clearable style="width:120px;" @change="loadEvaluations">
+                                <el-option label="5星" :value="5" />
+                                <el-option label="4星" :value="4" />
+                                <el-option label="3星" :value="3" />
+                                <el-option label="2星" :value="2" />
+                                <el-option label="1星" :value="1" />
+                            </el-select>
+                            <el-select v-model="evalFilter.repairerId" placeholder="维修人员" clearable style="width:140px;" @change="loadEvaluations">
+                                <el-option v-for="r in allRepairers" :key="r.id" :label="r.name" :value="r.id" />
+                            </el-select>
+                            <el-checkbox v-model="evalFilter.onlyPending" @change="loadEvaluations">只看待处理</el-checkbox>
+                            <el-button type="primary" @click="loadEvaluations">查询</el-button>
+                        </div>
+                        <el-table :data="evaluations" style="width:100%;" v-loading="evalLoading" size="small"
+                                  :row-class-name="({row}) => row.rating <= 2 ? 'bad-review-row' : ''">
+                            <el-table-column prop="orderNo" label="工单号" width="180" />
+                            <el-table-column prop="studentName" label="学生" width="100" />
+                            <el-table-column prop="repairerName" label="维修人员" width="100" />
+                            <el-table-column label="评分" width="100">
+                                <template #default="{ row }">
+                                    <span class="rating-stars">{{ '★'.repeat(row.rating) }}{{ '☆'.repeat(5 - row.rating) }}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column prop="content" label="评价内容" min-width="180" show-overflow-tooltip />
+                            <el-table-column label="标签" width="180">
+                                <template #default="{ row }">
+                                    <el-tag v-for="tag in (row.tags || '').split(',').filter(Boolean)" :key="tag"
+                                            size="small" style="margin-right:4px;" type="success">{{ tag }}</el-tag>
+                                </template>
+                            </el-table-column>
+                            <el-table-column prop="createTime" label="评价时间" width="170" />
+                            <el-table-column label="操作" width="100" fixed="right">
+                                <template #default="{ row }">
+                                    <div class="table-actions">
+                                        <el-button v-if="row.rating <= 2" type="warning" size="small" @click="handleEvaluation(row)">处理</el-button>
+                                        <el-button v-else size="small" @click="viewEvaluation(row)">查看</el-button>
+                                    </div>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                        <div style="margin-top:16px;display:flex;justify-content:flex-end;">
+                            <el-pagination
+                                v-model:current-page="evalPage"
+                                v-model:page-size="evalSize"
+                                :total="evalTotal"
+                                :page-sizes="[10, 20, 50]"
+                                layout="total, sizes, prev, pager, next"
+                                @change="loadEvaluations"
+                            />
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </template>
+
+    <!-- 派单弹窗 -->
+    <el-dialog v-model="assignDialogVisible" title="派单" width="500px" :close-on-click-modal="false">
+        <el-form :model="assignForm" label-width="100px">
+            <el-form-item label="工单编号">
+                <span>{{ assignForm.orderNo }}</span>
+            </el-form-item>
+            <el-form-item label="报修类型">
+                <el-tag>{{ assignForm.repairType }}</el-tag>
+            </el-form-item>
+            <el-form-item label="报修位置">
+                <span>{{ assignForm.location }}</span>
+            </el-form-item>
+            <el-form-item label="选择维修人员">
+                <el-select v-model="assignForm.repairerId" placeholder="请选择维修人员" style="width:100%;" filterable>
+                    <el-option v-for="r in availableRepairers" :key="r.id" :label="r.name + ' - ' + r.area + ' (' + r.skills + ')'" :value="r.id">
+                        <div class="repairer-select-item">
+                            <span>{{ r.name }} - {{ r.area }}</span>
+                            <span class="match-score" :class="{ low: r.matchScore < 60 }">匹配度 {{ r.matchScore }}分</span>
+                        </div>
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item v-if="assignForm.repairerId">
+                <el-alert title="智能推荐" type="info" :closable="false" show-icon>
+                    该维修人员技能: {{ getSelectedRepairerSkills() }}
+                </el-alert>
+            </el-form-item>
+        </el-form>
+        <template #footer>
+            <el-button @click="assignDialogVisible = false">取消</el-button>
+            <el-button type="primary" @click="confirmAssign" :loading="assignLoading">确认派单</el-button>
+            <el-button type="warning" @click="smartAssign" :loading="assignLoading">智能派单</el-button>
+        </template>
+    </el-dialog>
+
+    <!-- 维修人员编辑弹窗 -->
+    <el-dialog v-model="repairerDialogVisible" :title="repairerForm.id ? '编辑维修人员' : '新增维修人员'" width="500px" :close-on-click-modal="false">
+        <el-form :model="repairerForm" label-width="100px" :rules="repairerRules" ref="repairerFormRef">
+            <el-form-item label="工号" prop="jobNumber">
+                <el-input v-model="repairerForm.jobNumber" placeholder="请输入工号" />
+            </el-form-item>
+            <el-form-item label="姓名" prop="name">
+                <el-input v-model="repairerForm.name" placeholder="请输入姓名" />
+            </el-form-item>
+            <el-form-item label="手机号" prop="phone">
+                <el-input v-model="repairerForm.phone" placeholder="请输入手机号" />
+            </el-form-item>
+            <el-form-item label="维修技能" prop="skills">
+                <el-checkbox-group v-model="repairerSkillsArray">
+                    <el-checkbox label="水电" />
+                    <el-checkbox label="木工" />
+                    <el-checkbox label="空调" />
+                    <el-checkbox label="网络" />
+                    <el-checkbox label="门窗" />
+                </el-checkbox-group>
+            </el-form-item>
+            <el-form-item label="负责区域" prop="area">
+                <el-radio-group v-model="repairerForm.area">
+                    <el-radio label="东苑" />
+                    <el-radio label="西苑" />
+                    <el-radio label="南苑" />
+                    <el-radio label="北苑" />
+                </el-radio-group>
+            </el-form-item>
+            <el-form-item label="最大负载">
+                <el-input-number v-model="repairerForm.maxLoad" :min="1" :max="50" />
+            </el-form-item>
+            <el-form-item label="在岗状态">
+                <el-switch v-model="repairerForm.status" :active-value="1" :inactive-value="0" active-text="在岗" inactive-text="离岗" />
+            </el-form-item>
+        </el-form>
+        <template #footer>
+            <el-button @click="repairerDialogVisible = false">取消</el-button>
+            <el-button type="primary" @click="saveRepairer" :loading="repairerSaving">保存</el-button>
+        </template>
+    </el-dialog>
+
+    <!-- 评价详情弹窗 -->
+    <el-dialog v-model="evalDetailVisible" title="评价详情" width="480px">
+        <template v-if="currentEval">
+            <el-descriptions :column="1" border>
+                <el-descriptions-item label="工单号">{{ currentEval.orderNo }}</el-descriptions-item>
+                <el-descriptions-item label="学生">{{ currentEval.studentName }}</el-descriptions-item>
+                <el-descriptions-item label="维修人员">{{ currentEval.repairerName }}</el-descriptions-item>
+                <el-descriptions-item label="评分">
+                    <span class="rating-stars">{{ '★'.repeat(currentEval.rating) }}{{ '☆'.repeat(5 - currentEval.rating) }}</span>
+                </el-descriptions-item>
+                <el-descriptions-item label="评价内容">{{ currentEval.content || '无' }}</el-descriptions-item>
+                <el-descriptions-item label="标签">{{ currentEval.tags || '无' }}</el-descriptions-item>
+                <el-descriptions-item label="评价时间">{{ currentEval.createTime }}</el-descriptions-item>
+            </el-descriptions>
+        </template>
+    </el-dialog>
+</div>
+
+<!-- Vue 3 -->
+<script src="https://unpkg.com/vue@3.4.21/dist/vue.global.prod.js"></script>
+<!-- Element Plus -->
+<script src="https://unpkg.com/element-plus"></script>
+<!-- Element Plus Icons -->
+<script src="https://unpkg.com/@element-plus/icons-vue"></script>
+
+<script>
+const { createApp, ref, reactive, computed, watch, onMounted, nextTick, toRaw } = Vue;
+
+const app = createApp({
+    setup() {
+        // ============ 登录 ============
+        const isLoggedIn = ref(false);
+        const loginLoading = ref(false);
+        const loginFormRef = ref(null);
+        const loginForm = reactive({ username: 'admin', password: '123456' });
+        const loginRules = {
+            username: [{ required: true, message: '请输入账号', trigger: 'blur' }],
+            password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
+        };
+
+        function handleLogin() {
+            loginFormRef.value?.validate((valid) => {
+                if (!valid) return;
+                loginLoading.value = true;
+                setTimeout(() => {
+                    if (loginForm.username === 'admin' && loginForm.password === '123456') {
+                        isLoggedIn.value = true;
+                        localStorage.setItem('admin_token', 'demo_token');
+                        ElMessage.success('登录成功');
+                        loadAllData();
+                    } else {
+                        ElMessage.error('账号或密码错误');
+                    }
+                    loginLoading.value = false;
+                }, 600);
+            });
+        }
+
+        function handleUserCommand(cmd) {
+            if (cmd === 'logout') {
+                isLoggedIn.value = false;
+                localStorage.removeItem('admin_token');
+                ElMessage.success('已退出登录');
+            }
+        }
+
+        // ============ 菜单 ============
+        const currentMenu = ref('dashboard');
+        const menuItems = [
+            { key: 'dashboard', label: '仪表盘', icon: '📊' },
+            { key: 'orders', label: '工单管理', icon: '📋' },
+            { key: 'repairers', label: '人员管理', icon: '👷' },
+            { key: 'statistics', label: '统计分析', icon: '📈' },
+            { key: 'evaluations', label: '评价管理', icon: '⭐' }
+        ];
+
+        const currentPageTitle = computed(() => {
+            const item = menuItems.find(m => m.key === currentMenu.value);
+            return item ? item.label : '';
+        });
+
+        function switchMenu(key) {
+            currentMenu.value = key;
+            nextTick(() => {
+                if (key === 'dashboard') { renderDashboardCharts(); loadRecentOrders(); }
+                if (key === 'orders') loadOrders();
+                if (key === 'repairers') loadRepairers();
+                if (key === 'statistics') renderStatsCharts();
+                if (key === 'evaluations') loadEvaluations();
+            });
+        }
+
+        // ============ 时钟 ============
+        const currentTime = ref('');
+        setInterval(() => {
+            const now = new Date();
+            currentTime.value = now.toLocaleString('zh-CN', { hour12: false });
+        }, 1000);
+
+        // ============ 状态映射 ============
+        const statusMap = {
+            PENDING: '待派单',
+            ASSIGNED: '已派单',
+            REPAIRING: '维修中',
+            COMPLETED: '已完成',
+            EVALUATED: '已评价',
+            CANCELLED: '已取消'
+        };
+
+        // ============ 模拟数据 ============
+        function randomId() { return Math.floor(Math.random() * 10000) + 1; }
+        function randomDate(daysBack) {
+            const d = new Date();
+            d.setDate(d.getDate() - Math.floor(Math.random() * daysBack));
+            return d.toISOString().replace('T', ' ').substring(0, 19);
+        }
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            const d = new Date(dateStr);
+            return d.toLocaleString('zh-CN', { hour12: false }).replace(/\//g, '-');
+        }
+
+        // 维修人员
+        const allRepairers = ref([
+            { id: 1, jobNumber: 'REP001', name: '赵师傅', phone: '139****9001', skills: '水电,门窗', area: '东苑', currentLoad: 2, maxLoad: 10, rating: 4.8, status: 1 },
+            { id: 2, jobNumber: 'REP002', name: '钱师傅', phone: '139****9002', skills: '空调,网络', area: '西苑', currentLoad: 1, maxLoad: 8, rating: 4.5, status: 1 },
+            { id: 3, jobNumber: 'REP003', name: '孙师傅', phone: '139****9003', skills: '木工,门窗', area: '南苑', currentLoad: 3, maxLoad: 10, rating: 4.6, status: 1 },
+            { id: 4, jobNumber: 'REP004', name: '李师傅', phone: '139****9004', skills: '水电,网络,空调', area: '北苑', currentLoad: 0, maxLoad: 12, rating: 4.9, status: 1 },
+            { id: 5, jobNumber: 'REP005', name: '周师傅', phone: '139****9005', skills: '水电,木工', area: '东苑', currentLoad: 0, maxLoad: 10, rating: 4.3, status: 0 }
+        ]);
+
+        // 工单
+        const types = ['水电', '木工', '空调', '网络', '门窗', '其他'];
+        const areas = ['东苑1栋', '西苑2栋', '南苑3栋', '北苑4栋', '东苑5栋'];
+        const statuses = ['PENDING', 'ASSIGNED', 'REPAIRING', 'COMPLETED', 'EVALUATED', 'CANCELLED'];
+        const descs = [
+            '水龙头漏水严重，需要紧急维修',
+            '宿舍空调不制冷，温度降不下来',
+            '宿舍门锁坏了，无法正常锁门',
+            '网络接口损坏，无法连接校园网',
+            '阳台晾衣架断裂，需要更换',
+            '厕所马桶堵塞，无法正常使用',
+            '窗户玻璃有裂缝，存在安全隐患',
+            '电灯开关失灵，需要更换'
+        ];
+
+        function generateOrders(count) {
+            const orders = [];
+            for (let i = 0; i < count; i++) {
+                const status = statuses[i % statuses.length];
+                const repairer = allRepairers.value[i % allRepairers.value.length];
+                orders.push({
+                    id: count - i,
+                    orderNo: 'REP202604' + String(count - i).padStart(4, '0'),
+                    studentId: randomId(),
+                    studentName: ['张三', '李四', '王五', '赵六', '陈七'][i % 5],
+                    repairType: types[i % types.length],
+                    description: descs[i % descs.length],
+                    location: areas[i % areas.length],
+                    status: status,
+                    repairerId: status !== 'PENDING' ? repairer.id : null,
+                    repairerName: status !== 'PENDING' ? repairer.name : null,
+                    createTime: formatDate(randomDate(14)),
+                    assignTime: status !== 'PENDING' ? formatDate(randomDate(10)) : null,
+                    completeTime: ['COMPLETED','EVALUATED'].includes(status) ? formatDate(randomDate(3)) : null
+                });
+            }
+            return orders;
+        }
+
+        const allOrders = ref(generateOrders(30));
+        const recentOrders = ref([]);
+
+        function loadRecentOrders() {
+            recentOrders.value = allOrders.value.slice(0, 8);
+        }
+
+        // ============ 统计数据 ============
+        const stats = reactive({
+            totalOrders: 0,
+            completedOrders: 0,
+            completionRate: 0,
+            avgRating: 4.5,
+            todayNew: 0
+        });
+
+        function updateStats() {
+            const all = allOrders.value;
+            stats.totalOrders = all.length;
+            stats.completedOrders = all.filter(o => o.status === 'COMPLETED' || o.status === 'EVALUATED').length;
+            stats.completionRate = stats.totalOrders > 0 ? Math.round(stats.completedOrders / stats.totalOrders * 10000) / 100 : 0;
+        }
+
+        // ============ 工单管理 ============
+        const orders = ref([]);
+        const orderLoading = ref(false);
+        const orderPage = ref(1);
+        const orderSize = ref(10);
+        const orderTotal = ref(0);
+        const orderFilter = reactive({ status: '', repairType: '' });
+
+        function loadOrders() {
+            orderLoading.value = true;
+            setTimeout(() => {
+                let list = [...allOrders.value];
+                if (orderFilter.status) list = list.filter(o => o.status === orderFilter.status);
+                if (orderFilter.repairType) list = list.filter(o => o.repairType === orderFilter.repairType);
+                orderTotal.value = list.length;
+                const start = (orderPage.value - 1) * orderSize.value;
+                orders.value = list.slice(start, start + orderSize.value);
+                orderLoading.value = false;
+            }, 300);
+        }
+
+        function resetOrderFilter() {
+            orderFilter.status = '';
+            orderFilter.repairType = '';
+            orderPage.value = 1;
+            loadOrders();
+        }
+
+        // 派单
+        const assignDialogVisible = ref(false);
+        const assignLoading = ref(false);
+        const assignForm = reactive({ orderId: null, orderNo: '', repairType: '', location: '', repairerId: null });
+        const availableRepairers = ref([]);
+
+        function showAssignDialog(row) {
+            assignForm.orderId = row.id;
+            assignForm.orderNo = row.orderNo;
+            assignForm.repairType = row.repairType;
+            assignForm.location = row.location;
+            assignForm.repairerId = null;
+            // 计算匹配度
+            availableRepairers.value = allRepairers.value.filter(r => r.status === 1).map(r => {
+                let score = 0;
+                if ((r.skills || '').includes(row.repairType)) score += 40;
+                if (row.location && (row.location.includes(r.area))) score += 30;
+                const loadRate = (r.currentLoad || 0) / (r.maxLoad || 10);
+                if (loadRate <= 0.3) score += 20;
+                else if (loadRate <= 0.6) score += 12;
+                else if (loadRate <= 0.8) score += 6;
+                score += Math.round((r.rating || 5) * 2);
+                return { ...r, matchScore: score };
+            }).sort((a, b) => b.matchScore - a.matchScore);
+            assignDialogVisible.value = true;
+        }
+
+        function showReassignDialog(row) {
+            showAssignDialog(row);
+        }
+
+        function getSelectedRepairerSkills() {
+            const r = availableRepairers.value.find(r => r.id === assignForm.repairerId);
+            return r ? r.skills : '';
+        }
+
+        function smartAssign() {
+            if (availableRepairers.value.length === 0) {
+                ElMessage.warning('没有在岗的维修人员');
+                return;
+            }
+            assignForm.repairerId = availableRepairers.value[0].id;
+            ElMessage.success('已自动匹配最佳维修人员：' + availableRepairers.value[0].name);
+        }
+
+        function confirmAssign() {
+            if (!assignForm.repairerId) {
+                ElMessage.warning('请选择维修人员');
+                return;
+            }
+            assignLoading.value = true;
+            setTimeout(() => {
+                const order = allOrders.value.find(o => o.id === assignForm.orderId);
+                if (order) {
+                    const repairer = allRepairers.value.find(r => r.id === assignForm.repairerId);
+                    order.status = 'ASSIGNED';
+                    order.repairerId = assignForm.repairerId;
+                    order.repairerName = repairer ? repairer.name : '';
+                    order.assignTime = formatDate(new Date());
+                    if (repairer) repairer.currentLoad++;
+                }
+                assignLoading.value = false;
+                assignDialogVisible.value = false;
+                ElMessage.success('派单成功');
+                loadOrders();
+                updateStats();
+            }, 500);
+        }
+
+        function urgeOrder(row) {
+            ElMessage.success('已向 ' + (row.repairerName || '维修人员') + ' 发送催办通知');
+        }
+
+        function cancelOrder(row) {
+            ElMessageBox.confirm('确认取消工单 ' + row.orderNo + '？', '提示', { confirmButtonText: '确认', cancelButtonText: '取消', type: 'warning' })
+                .then(() => {
+                    row.status = 'CANCELLED';
+                    if (row.repairerId) {
+                        const repairer = allRepairers.value.find(r => r.id === row.repairerId);
+                        if (repairer && repairer.currentLoad > 0) repairer.currentLoad--;
+                    }
+                    ElMessage.success('工单已取消');
+                    loadOrders();
+                    updateStats();
+                }).catch(() => {});
+        }
+
+        // ============ 人员管理 ============
+        const repairers = ref([]);
+        const repairerLoading = ref(false);
+        const repairerPage = ref(1);
+        const repairerSize = ref(10);
+        const repairerTotal = ref(0);
+        const repairerFilter = reactive({ name: '', area: '' });
+        const repairerDialogVisible = ref(false);
+        const repairerSaving = ref(false);
+        const repairerFormRef = ref(null);
+        const repairerForm = reactive({ id: null, jobNumber: '', name: '', phone: '', skills: '', area: '东苑', maxLoad: 10, status: 1, password: '' });
+        const repairerSkillsArray = ref([]);
+        const repairerRules = {
+            jobNumber: [{ required: true, message: '请输入工号', trigger: 'blur' }],
+            name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
+            phone: [{ required: true, message: '请输入手机号', trigger: 'blur' }],
+            skills: [{ required: true, message: '请选择技能', trigger: 'change' }]
+        };
+
+        function loadRepairers() {
+            repairerLoading.value = true;
+            setTimeout(() => {
+                let list = [...allRepairers.value];
+                if (repairerFilter.name) list = list.filter(r => r.name.includes(repairerFilter.name));
+                if (repairerFilter.area) list = list.filter(r => r.area === repairerFilter.area);
+                repairerTotal.value = list.length;
+                const start = (repairerPage.value - 1) * repairerSize.value;
+                repairers.value = list.slice(start, start + repairerSize.value);
+                repairerLoading.value = false;
+            }, 200);
+        }
+
+        function showRepairerDialog(row) {
+            if (row) {
+                repairerForm.id = row.id;
+                repairerForm.jobNumber = row.jobNumber;
+                repairerForm.name = row.name;
+                repairerForm.phone = row.phone;
+                repairerForm.area = row.area;
+                repairerForm.maxLoad = row.maxLoad;
+                repairerForm.status = row.status;
+                repairerForm.password = '';
+                repairerSkillsArray.value = (row.skills || '').split(',').filter(Boolean);
+            } else {
+                Object.assign(repairerForm, { id: null, jobNumber: '', name: '', phone: '', area: '东苑', maxLoad: 10, status: 1, password: '' });
+                repairerSkillsArray.value = [];
+            }
+            repairerDialogVisible.value = true;
+        }
+
+        function saveRepairer() {
+            repairerForm.skills = repairerSkillsArray.value.join(',');
+            repairerFormRef.value?.validate((valid) => {
+                if (!valid) return;
+                repairerSaving.value = true;
+                setTimeout(() => {
+                    if (repairerForm.id) {
+                        const r = allRepairers.value.find(r => r.id === repairerForm.id);
+                        if (r) {
+                            r.jobNumber = repairerForm.jobNumber;
+                            r.name = repairerForm.name;
+                            r.phone = repairerForm.phone;
+                            r.skills = repairerForm.skills;
+                            r.area = repairerForm.area;
+                            r.maxLoad = repairerForm.maxLoad;
+                            r.status = repairerForm.status;
+                        }
+                        ElMessage.success('修改成功');
+                    } else {
+                        allRepairers.value.push({
+                            id: Math.max(...allRepairers.value.map(r => r.id), 0) + 1,
+                            jobNumber: repairerForm.jobNumber,
+                            name: repairerForm.name,
+                            phone: repairerForm.phone,
+                            skills: repairerForm.skills,
+                            area: repairerForm.area,
+                            currentLoad: 0,
+                            maxLoad: repairerForm.maxLoad,
+                            rating: 5.0,
+                            status: repairerForm.status
+                        });
+                        ElMessage.success('新增成功');
+                    }
+                    repairerSaving.value = false;
+                    repairerDialogVisible.value = false;
+                    loadRepairers();
+                }, 300);
+            });
+        }
+
+        function deleteRepairer(row) {
+            ElMessageBox.confirm('确认删除维修人员 ' + row.name + '？', '提示', { confirmButtonText: '确认', cancelButtonText: '取消', type: 'warning' })
+                .then(() => {
+                    const idx = allRepairers.value.findIndex(r => r.id === row.id);
+                    if (idx >= 0) allRepairers.value.splice(idx, 1);
+                    ElMessage.success('删除成功');
+                    loadRepairers();
+                }).catch(() => {});
+        }
+
+        // ============ 统计分析 ============
+        const statsDateRange = ref([]);
+
+        function quickDate(type) {
+            const end = new Date();
+            const start = new Date();
+            if (type === '7d') start.setDate(end.getDate() - 7);
+            else if (type === '30d') start.setDate(end.getDate() - 30);
+            else if (type === '90d') start.setDate(end.getDate() - 90);
+            statsDateRange.value = [start.toISOString().substring(0, 10), end.toISOString().substring(0, 10)];
+        }
+
+        function refreshStats() {
+            updateStats();
+            renderStatsCharts();
+            ElMessage.success('数据已刷新');
+        }
+
+        function exportExcel() {
+            ElMessage.success('正在导出Excel报表...（模拟）');
+        }
+
+        // ============ 评价管理 ============
+        const evaluations = ref([]);
+        const evalLoading = ref(false);
+        const evalPage = ref(1);
+        const evalSize = ref(10);
+        const evalTotal = ref(0);
+        const evalFilter = reactive({ rating: null, repairerId: null, onlyPending: false });
+        const evalDetailVisible = ref(false);
+        const currentEval = ref(null);
+
+        function generateEvaluations() {
+            const evals = [];
+            const tagsList = ['服务态度好', '维修速度快', '技术过硬', '响应及时', '服务周到'];
+            const studentNames = ['张三', '李四', '王五', '赵六', '陈七'];
+            for (let i = 0; i < 20; i++) {
+                const order = allOrders.value.find(o => o.status === 'EVALUATED');
+                evals.push({
+                    id: i + 1,
+                    orderId: i + 1,
+                    orderNo: 'REP202604' + String(i + 1).padStart(4, '0'),
+                    studentName: studentNames[i % 5],
+                    repairerId: allRepairers.value[i % 5].id,
+                    repairerName: allRepairers.value[i % 5].name,
+                    rating: [5, 4, 5, 3, 2, 5, 4, 5, 1, 4, 5, 5, 3, 4, 5, 5, 4, 5, 2, 5][i],
+                    content: descs[i % descs.length].replace('，', '，维修'),
+                    tags: tagsList.slice(0, 2 + (i % 3)).join(','),
+                    createTime: formatDate(randomDate(5))
+                });
+            }
+            return evals;
+        }
+
+        const allEvaluations = ref(generateEvaluations());
+
+        function loadEvaluations() {
+            evalLoading.value = true;
+            setTimeout(() => {
+                let list = [...allEvaluations.value];
+                if (evalFilter.rating) list = list.filter(e => e.rating === evalFilter.rating);
+                if (evalFilter.repairerId) list = list.filter(e => e.repairerId === evalFilter.repairerId);
+                if (evalFilter.onlyPending) list = list.filter(e => e.rating <= 2);
+                evalTotal.value = list.length;
+                const start = (evalPage.value - 1) * evalSize.value;
+                evaluations.value = list.slice(start, start + evalSize.value);
+                evalLoading.value = false;
+            }, 200);
+        }
+
+        function viewEvaluation(row) {
+            currentEval.value = row;
+            evalDetailVisible.value = true;
+        }
+
+        function handleEvaluation(row) {
+            ElMessageBox.confirm('确认已处理该差评？', '处理差评', { confirmButtonText: '确认已处理', type: 'warning' })
+                .then(() => {
+                    ElMessage.success('差评已标记为已处理');
+                    loadEvaluations();
+                }).catch(() => {});
+        }
+
+        // ============ 图表渲染 ============
+        function getChartDom(id) {
+            return document.getElementById(id);
+        }
+
+        function renderDashboardCharts() {
+            nextTick(() => {
+                // 报修趋势
+                const trendDom = getChartDom('trendChart');
+                if (trendDom) {
+                    const chart = echarts.init(trendDom);
+                    const days = [];
+                    for (let i = 6; i >= 0; i--) {
+                        const d = new Date();
+                        d.setDate(d.getDate() - i);
+                        days.push((d.getMonth() + 1) + '/' + d.getDate());
+                    }
+                    chart.setOption({
+                        tooltip: { trigger: 'axis' },
+                        grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+                        xAxis: { type: 'category', data: days, boundaryGap: false },
+                        yAxis: { type: 'value' },
+                        series: [{
+                            data: [12, 15, 8, 18, 10, 22, 14],
+                            type: 'line',
+                            smooth: true,
+                            areaStyle: { color: 'rgba(22,119,255,0.1)' },
+                            lineStyle: { color: '#1677FF' },
+                            itemStyle: { color: '#1677FF' }
+                        }]
+                    });
+                }
+
+                // 类型分布
+                const typeDom = getChartDom('typeChart');
+                if (typeDom) {
+                    const chart = echarts.init(typeDom);
+                    chart.setOption({
+                        tooltip: { trigger: 'item' },
+                        series: [{
+                            type: 'pie',
+                            radius: ['40%', '70%'],
+                            data: [
+                                { value: 8, name: '水电' },
+                                { value: 5, name: '木工' },
+                                { value: 6, name: '空调' },
+                                { value: 4, name: '网络' },
+                                { value: 5, name: '门窗' },
+                                { value: 2, name: '其他' }
+                            ],
+                            color: ['#1677FF', '#52C41A', '#FAAD14', '#FF4D4F', '#722ED1', '#13C2C2']
+                        }]
+                    });
+                }
+
+                // 工作量
+                const wlDom = getChartDom('workloadChart');
+                if (wlDom) {
+                    const chart = echarts.init(wlDom);
+                    chart.setOption({
+                        tooltip: { trigger: 'axis' },
+                        grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+                        xAxis: { type: 'category', data: allRepairers.value.filter(r => r.status === 1).map(r => r.name) },
+                        yAxis: { type: 'value' },
+                        series: [{
+                            data: allRepairers.value.filter(r => r.status === 1).map(r => r.currentLoad || Math.floor(Math.random() * 5) + 2),
+                            type: 'bar',
+                            itemStyle: { color: '#1677FF', borderRadius: [4, 4, 0, 0] }
+                        }]
+                    });
+                }
+
+                // 满意度
+                const satDom = getChartDom('satisfactionChart');
+                if (satDom) {
+                    const chart = echarts.init(satDom);
+                    chart.setOption({
+                        tooltip: { trigger: 'axis' },
+                        grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+                        xAxis: { type: 'category', data: ['5星', '4星', '3星', '2星', '1星'] },
+                        yAxis: { type: 'value' },
+                        series: [{
+                            data: [10, 5, 3, 1, 1],
+                            type: 'bar',
+                            itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: '#1677FF' }, { offset: 1, color: '#91CAFF' }
+                            ]), borderRadius: [4, 4, 0, 0] }
+                        }]
+                    });
+                }
+            });
+        }
+
+        function renderStatsCharts() {
+            nextTick(() => {
+                const ids = ['statsTrendChart', 'statsTypeChart', 'statsWorkloadChart', 'statsSatisfactionChart'];
+                ids.forEach(id => {
+                    const dom = getChartDom(id);
+                    if (dom) {
+                        const chart = echarts.init(dom);
+                        const days = [];
+                        for (let i = 29; i >= 0; i--) {
+                            const d = new Date();
+                            d.setDate(d.getDate() - i);
+                            days.push((d.getMonth() + 1) + '/' + d.getDate());
+                        }
+                        if (id === 'statsTrendChart') {
+                            chart.setOption({
+                                tooltip: { trigger: 'axis' },
+                                grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+                                xAxis: { type: 'category', data: days.slice(0, 14), boundaryGap: false },
+                                yAxis: { type: 'value' },
+                                series: [{
+                                    data: days.slice(0, 14).map(() => Math.floor(Math.random() * 10) + 5),
+                                    type: 'line', smooth: true,
+                                    areaStyle: { color: 'rgba(22,119,255,0.1)' },
+                                    lineStyle: { color: '#1677FF' },
+                                    itemStyle: { color: '#1677FF' }
+                                }]
+                            });
+                        } else if (id === 'statsTypeChart') {
+                            chart.setOption({
+                                tooltip: { trigger: 'item' },
+                                series: [{
+                                    type: 'pie', radius: ['45%', '75%'],
+                                    data: [{ value: 8, name: '水电' },{ value: 5, name: '木工' },{ value: 6, name: '空调' },{ value: 4, name: '网络' },{ value: 5, name: '门窗' },{ value: 2, name: '其他' }],
+                                    color: ['#1677FF', '#52C41A', '#FAAD14', '#FF4D4F', '#722ED1', '#13C2C2']
+                                }]
+                            });
+                        } else if (id === 'statsWorkloadChart') {
+                            chart.setOption({
+                                tooltip: { trigger: 'axis' },
+                                grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+                                xAxis: { type: 'category', data: allRepairers.value.slice(0, 5).map(r => r.name) },
+                                yAxis: { type: 'value' },
+                                series: [{
+                                    data: [8, 5, 7, 10, 4],
+                                    type: 'bar',
+                                    itemStyle: { color: '#1677FF', borderRadius: [4, 4, 0, 0] }
+                                }]
+                            });
+                        } else if (id === 'statsSatisfactionChart') {
+                            chart.setOption({
+                                tooltip: { trigger: 'axis' },
+                                grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+                                xAxis: { type: 'category', data: ['5星', '4星', '3星', '2星', '1星'] },
+                                yAxis: { type: 'value' },
+                                series: [{
+                                    data: [10, 5, 3, 1, 1],
+                                    type: 'bar',
+                                    itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                        { offset: 0, color: '#1677FF' }, { offset: 1, color: '#91CAFF' }
+                                    ]), borderRadius: [4, 4, 0, 0] }
+                                }]
+                            });
+                        }
+                    }
+                });
+            });
+        }
+
+        // ============ 初始化 ============
+        function loadAllData() {
+            updateStats();
+            loadRecentOrders();
+            nextTick(() => renderDashboardCharts());
+        }
+
+        // 检查登录状态
+        onMounted(() => {
+            if (localStorage.getItem('admin_token')) {
+                isLoggedIn.value = true;
+                loadAllData();
+            }
+        });
+
+        // 菜单切换时重新渲染图表
+        watch(currentMenu, (val) => {
+            if (val === 'dashboard') nextTick(() => renderDashboardCharts());
+            if (val === 'statistics') nextTick(() => renderStatsCharts());
+        });
+
+        return {
+            isLoggedIn, loginLoading, loginForm, loginFormRef, loginRules,
+            handleLogin, handleUserCommand,
+            currentMenu, menuItems, currentPageTitle, switchMenu,
+            currentTime, statusMap,
+            // 仪表盘
+            stats, recentOrders,
+            // 工单管理
+            orders, orderLoading, orderPage, orderSize, orderTotal, orderFilter,
+            loadOrders, resetOrderFilter,
+            assignDialogVisible, assignLoading, assignForm, availableRepairers,
+            showAssignDialog, showReassignDialog, getSelectedRepairerSkills, smartAssign, confirmAssign,
+            urgeOrder, cancelOrder,
+            // 人员管理
+            repairers, repairerLoading, repairerPage, repairerSize, repairerTotal, repairerFilter,
+            loadRepairers,
+            repairerDialogVisible, repairerSaving, repairerForm, repairerFormRef,
+            repairerSkillsArray, repairerRules,
+            showRepairerDialog, saveRepairer, deleteRepairer,
+            allRepairers,
+            // 统计分析
+            statsDateRange, quickDate, refreshStats, exportExcel,
+            // 评价管理
+            evaluations, evalLoading, evalPage, evalSize, evalTotal, evalFilter,
+            loadEvaluations, viewEvaluation, handleEvaluation,
+            evalDetailVisible, currentEval
+        };
+    }
+});
+
+// 注册 Element Plus 图标
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+    app.component(key, component);
+}
+
+app.use(ElementPlus, { locale: ElementPlusLocaleZhCn || {} });
+app.mount('#app');
+</script>
+</body>
+</html>

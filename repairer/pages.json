@@ -1,0 +1,84 @@
+{
+  "pages": [
+    {
+      "path": "pages/login/login",
+      "style": {
+        "navigationBarTitleText": "维修人员登录",
+        "navigationStyle": "custom",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/hall/hall",
+      "style": {
+        "navigationBarTitleText": "工单大厅",
+        "navigationBarBackgroundColor": "#1677FF",
+        "navigationBarTextStyle": "white",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/my-orders/my-orders",
+      "style": {
+        "navigationBarTitleText": "我的工单",
+        "navigationBarBackgroundColor": "#1677FF",
+        "navigationBarTextStyle": "white",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/order-detail/order-detail",
+      "style": {
+        "navigationBarTitleText": "工单详情",
+        "navigationBarBackgroundColor": "#1677FF",
+        "navigationBarTextStyle": "white",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/mine/mine",
+      "style": {
+        "navigationBarTitleText": "个人中心",
+        "navigationBarBackgroundColor": "#1677FF",
+        "navigationBarTextStyle": "white",
+        "enablePullDownRefresh": false
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "维修端",
+    "navigationBarBackgroundColor": "#1677FF",
+    "backgroundColor": "#F5F5F5"
+  },
+  "tabBar": {
+    "color": "#8C8C8C",
+    "selectedColor": "#1677FF",
+    "borderStyle": "black",
+    "backgroundColor": "#FFFFFF",
+    "list": [
+      {
+        "pagePath": "pages/hall/hall",
+        "iconPath": "static/icons/hall.png",
+        "selectedIconPath": "static/icons/hall-active.png",
+        "text": "工单大厅"
+      },
+      {
+        "pagePath": "pages/my-orders/my-orders",
+        "iconPath": "static/icons/order.png",
+        "selectedIconPath": "static/icons/order-active.png",
+        "text": "我的工单"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "iconPath": "static/icons/mine.png",
+        "selectedIconPath": "static/icons/mine-active.png",
+        "text": "我的"
+      }
+    ]
+  },
+  "easycom": {
+    "autoscan": true,
+    "custom": {}
+  }
+}

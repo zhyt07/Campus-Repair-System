@@ -1,0 +1,21 @@
+{
+  "name": "campus-repair-student",
+  "version": "1.0.0",
+  "description": "校园宿舍智能报修与服务评价系统 - 学生端小程序",
+  "main": "main.js",
+  "scripts": {
+    "dev:mp-weixin": "uni -p mp-weixin",
+    "build:mp-weixin": "uni build -p mp-weixin",
+    "dev:h5": "uni",
+    "build:h5": "uni build"
+  },
+  "dependencies": {
+    "pinia": "^2.1.7"
+  },
+  "devDependencies": {
+    "@dcloudio/uni-app": "^3.0.0",
+    "@dcloudio/uni-mp-weixin": "^3.0.0",
+    "sass": "^1.69.0",
+    "vue": "^3.3.8"
+  }
+}
