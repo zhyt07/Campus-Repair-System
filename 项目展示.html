@@ -1,382 +1,342 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>校园宿舍智能报修系统 - 完整项目展示</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:#F0F2F5}
-.top-bar{background:#1677FF;color:#fff;text-align:center;padding:16px;font-size:20px;font-weight:bold}
-.tab-nav{display:flex;flex-wrap:wrap;gap:6px;padding:12px 16px;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,0.06);position:sticky;top:0;z-index:100;justify-content:center}
-.tab-btn{padding:8px 16px;border-radius:6px;border:1.5px solid #1677FF;background:#fff;color:#1677FF;font-size:13px;cursor:pointer;white-space:nowrap}
-.tab-btn:hover,.tab-btn.active{background:#1677FF;color:#fff}
-.content{max-width:1000px;margin:20px auto;background:#fff;border-radius:12px;padding:30px;min-height:500px;display:none;box-shadow:0 2px 12px rgba(0,0,0,0.06)}
-.content.show{display:block}
-h2{color:#1677FF;margin-bottom:16px;border-bottom:2px solid #E6F4FF;padding-bottom:10px}
-h3{color:#333;margin:16px 0 10px}
-p{line-height:1.8;color:#444;margin-bottom:8px}
-table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}
-th{background:#FAFAFA;padding:10px;text-align:left;border:1px solid #F0F0F0}
-td{padding:10px;border:1px solid #F0F0F0}
-.tag{display:inline-block;padding:2px 10px;border-radius:4px;font-size:12px;font-weight:500}
-.tag-pending{background:#FFF7E6;color:#FAAD14}
-.tag-progress{background:#E6F4FF;color:#1677FF}
-.tag-done{background:#F6FFED;color:#52C41A}
-
-/* 手机模拟 */
-.phone-wrap{display:flex;gap:20px;flex-wrap:wrap;justify-content:center}
-.phone{width:375px;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.1);border:2px solid #E5E5E5}
-.phone-hd{background:#1677FF;color:#fff;padding:14px;text-align:center;font-weight:600;font-size:15px}
-.phone-bd{padding:14px;min-height:450px;max-height:550px;overflow-y:auto}
-.card{background:#F8F9FA;border-radius:10px;padding:12px;margin-bottom:10px}
-.card-row{display:flex;justify-content:space-between;align-items:center}
-.btn{display:block;width:100%;padding:10px;border-radius:8px;border:none;font-size:14px;cursor:pointer;font-weight:500;text-align:center;margin-top:8px}
-.btn-primary{background:#1677FF;color:#fff}
-.btn-success{background:#52C41A;color:#fff}
-.btn-line{background:#fff;color:#1677FF;border:1.5px solid #1677FF}
-.form-g{margin-bottom:12px}
-.form-g label{display:block;font-size:13px;color:#333;font-weight:500;margin-bottom:4px}
-.form-g input,.form-g select,.form-g textarea{width:100%;padding:8px 10px;border:1.5px solid #E5E5E5;border-radius:6px;font-size:13px;outline:none}
-.form-g textarea{min-height:60px;resize:vertical}
-
-/* 时间轴 */
-.timeline{position:relative;padding-left:22px}
-.timeline::before{content:'';position:absolute;left:5px;top:0;bottom:0;width:2px;background:#E5E5E5}
-.timeline-item{position:relative;margin-bottom:14px;padding-left:6px}
-.timeline-item::before{content:'';position:absolute;left:-20px;top:3px;width:10px;height:10px;border-radius:50%}
-.timeline-item.done::before{background:#52C41A;box-shadow:0 0 0 2px #52C41A}
-.timeline-item.cur::before{background:#1677FF;box-shadow:0 0 0 2px #1677FF}
-.timeline-item.wait::before{background:#fff;border:2px solid #D9D9D9}
-.tl-title{font-size:13px;font-weight:600}
-.tl-time{font-size:11px;color:#999}
-
-.toast-fixed{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.75);color:#fff;padding:12px 24px;border-radius:8px;z-index:999;display:none}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校园宿舍智能报修系统 - 功能演示</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:#f0f2f5;text-align:center}
+        .role-bar{display:flex;justify-content:center;gap:12px;padding:16px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.06);position:sticky;top:0;z-index:100}
+        .role-btn{padding:10px 28px;border-radius:8px;border:2px solid #1677FF;background:#fff;color:#1677FF;font-size:15px;cursor:pointer;font-weight:600;transition:all .3s}
+        .role-btn:hover,.role-btn.active{background:#1677FF;color:#fff}
+        .phone{width:400px;margin:20px auto;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.12);display:none;min-height:650px;border:1px solid #e5e5e5}
+        .phone.show{display:block}
+        .phone-header{background:#1677FF;color:#fff;padding:16px 20px;text-align:center;font-size:17px;font-weight:bold;display:flex;align-items:center;justify-content:center;gap:8px}
+        .phone-header .back{position:absolute;left:16px;font-size:24px;cursor:pointer;font-weight:300}
+        .phone-body{padding:16px;overflow-y:auto;max-height:550px}
+        .card{background:#f8f9fa;border-radius:12px;padding:16px;margin-bottom:12px;border:1px solid #eee;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+        .card-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+        .tag{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500}
+        .tag-pending{background:#fff7e6;color:#faad14;border:1px solid #ffd591}
+        .tag-dispatched{background:#e6f4ff;color:#1677ff;border:1px solid #91caff}
+        .tag-progress{background:#e6f4ff;color:#1677ff;border:1px solid #91caff}
+        .tag-done{background:#f6ffed;color:#52c41a;border:1px solid #b7eb8f}
+        .btn{display:block;width:100%;padding:12px;border-radius:8px;border:none;font-size:15px;cursor:pointer;font-weight:500;text-align:center;margin-top:12px;transition:all .2s}
+        .btn-primary{background:#1677ff;color:#fff}
+        .btn-primary:hover{background:#4096ff}
+        .btn-success{background:#52c41a;color:#fff}
+        .btn-warning{background:#faad14;color:#fff}
+        .btn-outline{background:#fff;color:#1677ff;border:1.5px solid #1677ff}
+        .form-group{margin-bottom:14px}
+        .form-group label{display:block;margin-bottom:6px;font-size:14px;font-weight:500;color:#333}
+        .form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 12px;border:1.5px solid #e5e5e5;border-radius:8px;font-size:14px;outline:none;font-family:inherit}
+        .form-group textarea{resize:vertical;min-height:70px}
+        .timeline{position:relative;padding-left:24px}
+        .timeline::before{content:'';position:absolute;left:6px;top:0;bottom:0;width:2px;background:#e5e5e5}
+        .timeline-item{position:relative;margin-bottom:16px;padding-left:8px}
+        .timeline-item::before{content:'';position:absolute;left:-22px;top:4px;width:12px;height:12px;border-radius:50%}
+        .timeline-item.done::before{background:#52c41a;box-shadow:0 0 0 2px #52c41a}
+        .timeline-item.cur::before{background:#1677ff;box-shadow:0 0 0 2px #1677ff}
+        .timeline-item.wait::before{background:#fff;border:2px solid #d9d9d9}
+        .tl-title{font-size:14px;font-weight:600}
+        .tl-time{font-size:12px;color:#999}
+        .stars{color:#faad14;font-size:24px}
+        .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+        .stat-box{background:#f0f5ff;border-radius:10px;padding:14px;text-align:center}
+        .stat-box .num{font-size:22px;font-weight:bold;color:#1677ff}
+        .stat-box .lbl{font-size:12px;color:#666;margin-top:4px}
+        .admin-panel{width:800px;margin:20px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.08);display:none;min-height:600px}
+        .admin-panel.show{display:block}
+        .admin-header{background:#001529;color:#fff;padding:16px 24px;display:flex;justify-content:space-between}
+        .admin-body{display:flex;min-height:500px}
+        .admin-sidebar{width:200px;background:#001529;color:#fff;padding-top:16px}
+        .admin-menu{padding:12px 20px;cursor:pointer;font-size:14px;border-left:3px solid transparent}
+        .admin-menu:hover,.admin-menu.active{background:rgba(255,255,255,0.08);border-left-color:#1677ff;color:#1677ff}
+        .admin-content{flex:1;padding:20px;background:#f5f5f5;overflow-y:auto}
+        table{width:100%;border-collapse:collapse;font-size:13px}
+        th{background:#fafafa;padding:10px 8px;text-align:left;border-bottom:2px solid #eee}
+        td{padding:10px 8px;border-bottom:1px solid #eee}
+        .toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.78);color:#fff;padding:12px 24px;border-radius:8px;z-index:999;display:none;font-size:15px}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+        .pulse{animation:pulse 2s infinite}
+    </style>
 </head>
 <body>
 
-<div class="top-bar">🏫 校园宿舍智能报修与服务评价系统 - 完整项目展示</div>
-<div id="toast" class="toast-fixed"></div>
+<div class="role-bar">
+    <button class="role-btn active" onclick="switchRole('student')">📱 学生端</button>
+    <button class="role-btn" onclick="switchRole('repairer')">🔧 维修端</button>
+    <button class="role-btn" onclick="switchRole('admin')">💻 管理后台</button>
+</div>
+<div id="toast" class="toast"></div>
 
-<div class="tab-nav">
-    <button class="tab-btn active" onclick="showPage('overview')">📋 项目概览</button>
-    <button class="tab-btn" onclick="showPage('doc1')">01 可行性分析</button>
-    <button class="tab-btn" onclick="showPage('doc2')">02 需求规格</button>
-    <button class="tab-btn" onclick="showPage('doc3')">03 概要设计</button>
-    <button class="tab-btn" onclick="showPage('doc4')">04 详细设计</button>
-    <button class="tab-btn" onclick="showPage('doc5')">05 UI设计</button>
-    <button class="tab-btn" onclick="showPage('doc6')">06 测试计划</button>
-    <button class="tab-btn" onclick="showPage('doc7')">07 测试报告</button>
-    <button class="tab-btn" onclick="showPage('demo')">📱 系统演示</button>
+<!-- ========== 学生端 ========== -->
+<div id="student-phone" class="phone show">
+    <div class="phone-header"><span id="stu-title">🏠 校园宿舍报修</span></div>
+    <div class="phone-body" id="stu-body"></div>
 </div>
 
-<!-- ========== 项目概览 ========== -->
-<div id="overview" class="content show">
-<h2>📋 项目概览</h2>
-<p><b>项目名称：</b>校园宿舍智能报修与服务评价系统</p>
-<p><b>开发者：</b>黎智涵 | 学号：2408090602026 | 班级：数字媒体技术2班</p>
-<p><b>学校：</b>湖南工业大学 | <b>指导教师：</b>钟云飞</p>
-<p><b>完成日期：</b>2026年6月</p>
-
-<h3>项目简介</h3>
-<p>本项目是湖南工业大学软件工程课程大作业，旨在为校园宿舍提供智能化的报修管理与服务评价解决方案。系统实现"报修-派单-维修-验收-评价"全流程闭环管理，解决传统报修流程繁琐、响应慢、信息不透明的问题。</p>
-
-<h3>技术栈</h3>
-<table>
-<tr><th>层级</th><th>技术</th></tr>
-<tr><td>后端</td><td>Spring Boot 2.7 + MyBatis-Plus</td></tr>
-<tr><td>数据库</td><td>MySQL 8.0 / H2</td></tr>
-<tr><td>学生端</td><td>uni-app (Vue 3) 微信小程序</td></tr>
-<tr><td>维修端</td><td>uni-app (Vue 3) 微信小程序</td></tr>
-<tr><td>管理后台</td><td>Vue 3 + Element Plus + ECharts</td></tr>
-</table>
-
-<h3>项目文档清单</h3>
-<table>
-<tr><th>序号</th><th>文档名称</th><th>内容说明</th></tr>
-<tr><td>01</td><td>可行性分析报告</td><td>技术、经济、运行、法律可行性论证</td></tr>
-<tr><td>02</td><td>需求规格说明书</td><td>功能需求、性能需求、接口需求</td></tr>
-<tr><td>03</td><td>概要设计说明书</td><td>系统架构、模块划分、接口设计</td></tr>
-<tr><td>04</td><td>详细设计说明书</td><td>6个核心模块详细设计、算法、流程图</td></tr>
-<tr><td>05</td><td>用户界面设计说明书</td><td>三端界面布局、色彩、交互规范</td></tr>
-<tr><td>06</td><td>测试计划</td><td>测试策略、测试用例设计</td></tr>
-<tr><td>07</td><td>测试报告</td><td>测试执行结果、缺陷统计、结论</td></tr>
-</table>
+<!-- ========== 维修端 ========== -->
+<div id="repairer-phone" class="phone">
+    <div class="phone-header"><span id="rep-title">🔧 维修人员端</span></div>
+    <div class="phone-body" id="rep-body"></div>
 </div>
 
-<!-- ========== 01 可行性分析 ========== -->
-<div id="doc1" class="content">
-<h2>01 可行性分析报告</h2>
-<h3>1. 技术可行性</h3>
-<p>采用业界成熟主流技术栈：Spring Boot + MyBatis-Plus + MySQL + Vue 3 + uni-app。所有开发工具均可免费获取，技术风险低。</p>
-<h3>2. 经济可行性</h3>
-<p>开发成本极低（人力零成本 + 全部开源免费工具），预期效益明显（报修时间从5分钟缩至1分钟）。</p>
-<h3>3. 运行可行性</h3>
-<p>学生习惯微信小程序（接受度高），维修工界面简洁（简单培训可用），管理员Web后台直观。</p>
-<h3>4. 法律可行性</h3>
-<p>项目为教育目的课程作业，使用开源技术，无法律风险。</p>
-<h3>结论：项目完全可行，建议启动开发。</h3>
-</div>
-
-<!-- ========== 02 需求规格 ========== -->
-<div id="doc2" class="content">
-<h2>02 需求规格说明书</h2>
-<h3>功能需求总览</h3>
-<table>
-<tr><th>用户端</th><th>功能模块</th></tr>
-<tr><td>学生端</td><td>登录、报修申请、进度查询、服务评价、历史记录、消息通知</td></tr>
-<tr><td>维修端</td><td>登录、工单接收、工单处理（接单/完工）、工单查询</td></tr>
-<tr><td>管理端</td><td>工单管理、智能派单、人员管理、统计分析、公告管理、评价管理</td></tr>
-</table>
-<h3>性能要求</h3>
-<p>页面加载≤2秒 | 操作响应≤1秒 | 支持≥200人同时在线 | 数据同步≤5秒</p>
-</div>
-
-<!-- ========== 03 概要设计 ========== -->
-<div id="doc3" class="content">
-<h2>03 概要设计说明书</h2>
-<h3>系统架构</h3>
-<p>采用前后端分离B/S架构，三层设计：表现层（小程序+Web）→ 业务逻辑层（Spring Boot）→ 数据访问层（MySQL+Redis）</p>
-<h3>核心模块</h3>
-<table>
-<tr><th>子系统</th><th>模块数</th><th>主要功能</th></tr>
-<tr><td>学生端</td><td>6个</td><td>认证、报修申请、进度查询、评价、历史、通知</td></tr>
-<tr><td>维修端</td><td>3个</td><td>工单接收、工单处理、工单查询</td></tr>
-<tr><td>管理端</td><td>6个</td><td>工单管理、智能派单、人员管理、统计、公告、评价</td></tr>
-</table>
-<h3>工单状态流转</h3>
-<p>PENDING(待派单) → DISPATCHED(已派单) → IN_PROGRESS(维修中) → COMPLETED(已完成) → EVALUATED(已评价)</p>
-</div>
-
-<!-- ========== 04 详细设计 ========== -->
-<div id="doc4" class="content">
-<h2>04 详细设计说明书</h2>
-<h3>6个核心模块详细设计</h3>
-<table>
-<tr><th>模块</th><th>功能类型</th><th>说明</th></tr>
-<tr><td>报修申请模块</td><td>增加</td><td>表单验证→编号生成→入库→触发派单</td></tr>
-<tr><td>进度查询模块</td><td>查询</td><td>分页列表+状态筛选+时间轴展示</td></tr>
-<tr><td>工单处理模块</td><td>修改</td><td>接单（状态→维修中）、完工（状态→已完成）</td></tr>
-<tr><td>人员管理模块</td><td>增删改</td><td>维修人员CRUD操作</td></tr>
-<tr><td>统计分析模块</td><td>统计</td><td>多维度聚合查询+ECharts图表+Excel导出</td></tr>
-<tr><td>智能派单模块</td><td>流程处理</td><td>加权评分算法（技能40+区域30+负载20+评价10）</td></tr>
-</table>
-</div>
-
-<!-- ========== 05 UI设计 ========== -->
-<div id="doc5" class="content">
-<h2>05 用户界面设计说明书</h2>
-<h3>全局设计规范</h3>
-<p><b>主色调：</b>#1677FF | <b>成功色：</b>#52C41A | <b>警告色：</b>#FAAD14 | <b>错误色：</b>#FF4D4F</p>
-<p><b>小程序端：</b>页面边距30rpx，卡片圆角16rpx，标题36rpx加粗，正文28rpx</p>
-<p><b>管理后台：</b>左侧菜单220px深色#001529，顶栏60px，内容区内边距24px</p>
-<h3>三端页面清单</h3>
-<table>
-<tr><th>端</th><th>页面数</th><th>主要页面</th></tr>
-<tr><td>学生端</td><td>7个</td><td>登录、首页、报修申请、我的报修、报修详情、服务评价、个人中心</td></tr>
-<tr><td>维修端</td><td>5个</td><td>登录、工单大厅、我的工单、工单详情、个人中心</td></tr>
-<tr><td>管理后台</td><td>8个</td><td>登录、仪表盘、工单管理、统计分析、人员管理、评价管理、公告管理、系统设置</td></tr>
-</table>
-</div>
-
-<!-- ========== 06 测试计划 ========== -->
-<div id="doc6" class="content">
-<h2>06 测试计划</h2>
-<h3>测试策略</h3>
-<p>功能测试（黑盒）+ 界面测试（手工）+ 业务流程测试（端到端场景）</p>
-<h3>测试用例（部分）</h3>
-<table>
-<tr><th>编号</th><th>测试项</th><th>预期结果</th></tr>
-<tr><td>STU-01</td><td>学生登录成功</td><td>跳转首页</td></tr>
-<tr><td>STU-02</td><td>提交报修</td><td>生成报修单编号</td></tr>
-<tr><td>STU-03</td><td>必填项校验</td><td>提示"请输入故障描述"</td></tr>
-<tr><td>STU-04</td><td>查看报修详情</td><td>显示时间轴进度</td></tr>
-<tr><td>REP-01</td><td>维修工接单</td><td>状态变为"维修中"</td></tr>
-<tr><td>ADM-01</td><td>管理员派单</td><td>状态变为"已派单"</td></tr>
-</table>
-</div>
-
-<!-- ========== 07 测试报告 ========== -->
-<div id="doc7" class="content">
-<h2>07 测试报告</h2>
-<h3>测试概要</h3>
-<table>
-<tr><th>项目</th><th>数据</th></tr>
-<tr><td>用例总数</td><td>19</td></tr>
-<tr><td>通过</td><td>19</td></tr>
-<tr><td>失败</td><td>0</td></tr>
-<tr><td>通过率</td><td>100%</td></tr>
-</table>
-<h3>缺陷统计</h3>
-<p>高优先级：0 | 中优先级：0 | 低优先级：0</p>
-<h3>结论</h3>
-<p>所有核心业务流程测试通过，系统满足验收标准，验收通过。</p>
-</div>
-
-<!-- ========== 系统演示 ========== -->
-<div id="demo" class="content">
-<h2>📱 系统演示（点击可操作）</h2>
-<div class="phone-wrap">
-
-    <!-- 学生端 -->
-    <div class="phone">
-        <div class="phone-hd" id="stuTitle">📝 学生端</div>
-        <div class="phone-bd" id="stuBody"></div>
-    </div>
-
-    <!-- 维修端 -->
-    <div class="phone">
-        <div class="phone-hd" id="repTitle">🔧 维修端</div>
-        <div class="phone-bd" id="repBody"></div>
-    </div>
-
-</div>
-
-<!-- 管理后台 -->
-<div style="margin-top:20px;background:#fff;border-radius:12px;overflow:hidden;border:2px solid #E5E5E5">
-    <div style="background:#001529;color:#fff;padding:14px 20px;font-weight:600;display:flex;justify-content:space-between">
-        <span>💻 管理后台</span>
-        <span style="font-size:13px;opacity:0.8">👤 管理员</span>
-    </div>
-    <div style="display:flex;min-height:350px">
-        <div style="width:180px;background:#001529;color:#fff;padding-top:10px;flex-shrink:0">
-            <div style="padding:10px 16px;border-left:3px solid #1677FF;background:rgba(255,255,255,0.08);color:#1677FF;font-size:13px">📋 工单管理</div>
-            <div style="padding:10px 16px;font-size:13px;opacity:0.7">📊 统计分析</div>
-            <div style="padding:10px 16px;font-size:13px;opacity:0.7">👨‍🔧 人员管理</div>
+<!-- ========== 管理后台 ========== -->
+<div id="admin-panel" class="admin-panel">
+    <div class="admin-header"><span>🏫 智能报修管理系统</span><span>👤 管理员</span></div>
+    <div class="admin-body">
+        <div class="admin-sidebar">
+            <div class="admin-menu active" onclick="adminTab('dashboard', this)">📊 仪表盘</div>
+            <div class="admin-menu" onclick="adminTab('orders', this)">📋 工单管理</div>
+            <div class="admin-menu" onclick="adminTab('repairers', this)">👨‍🔧 人员管理</div>
+            <div class="admin-menu" onclick="adminTab('statistics', this)">📈 统计分析</div>
+            <div class="admin-menu" onclick="adminTab('evaluations', this)">⭐ 评价管理</div>
         </div>
-        <div style="flex:1;padding:16px;background:#F5F5F5">
-            <table style="font-size:13px">
-                <tr style="background:#FAFAFA"><th>编号</th><th>类型</th><th>位置</th><th>状态</th><th>维修人员</th><th>操作</th></tr>
-                <tr><td>REP20260623001</td><td>水电故障</td><td>3栋512</td><td><span class="tag tag-progress">维修中</span></td><td>张师傅</td><td>-</td></tr>
-                <tr style="background:#FFFBE6"><td>REP20260623002</td><td>家具损坏</td><td>5栋203</td><td><span class="tag tag-pending">待派单</span></td><td>-</td><td><button onclick="showToast('✅ 派单成功！已分配给张师傅')" style="background:#1677FF;color:#fff;border:none;padding:4px 12px;border-radius:4px;cursor:pointer">派单</button></td></tr>
-                <tr><td>REP20260622015</td><td>家具损坏</td><td>5栋203</td><td><span class="tag tag-done">已完成</span></td><td>李师傅</td><td>-</td></tr>
-            </table>
-        </div>
+        <div class="admin-content" id="admin-content"></div>
     </div>
-</div>
 </div>
 
 <script>
-function showPage(id){
-    document.querySelectorAll('.content').forEach(e=>e.classList.remove('show'));
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-    document.getElementById(id).classList.add('show');
-    event.target.classList.add('active');
-    if(id==='demo'){renderStuHome();renderRepHome();}
-}
-
+// ==================== 全局工具 ====================
 function showToast(msg){
     const t=document.getElementById('toast');
-    t.textContent=msg;t.style.display='block';
-    setTimeout(()=>t.style.display='none',1500);
+    t.textContent=msg; t.style.display='block';
+    setTimeout(()=>t.style.display='none',1600);
 }
 
-// ==== 学生端 ====
-function renderStuHome(){
-    document.getElementById('stuTitle').textContent='📝 学生端 - 首页';
-    document.getElementById('stuBody').innerHTML=`
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
-            <div class="card" style="text-align:center;cursor:pointer" onclick="renderStuSubmit()">
-                <div style="font-size:30px">📝</div>
-                <div style="font-size:13px;font-weight:600">我要报修</div>
+function switchRole(role){
+    document.querySelectorAll('.phone,.admin-panel').forEach(e=>e.classList.remove('show'));
+    document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));
+    if(role==='student'){
+        document.getElementById('student-phone').classList.add('show');
+        document.querySelector('.role-btn:nth-child(1)').classList.add('active');
+        renderStudentHome();
+    }else if(role==='repairer'){
+        document.getElementById('repairer-phone').classList.add('show');
+        document.querySelector('.role-btn:nth-child(2)').classList.add('active');
+        renderRepairerHome();
+    }else{
+        document.getElementById('admin-panel').classList.add('show');
+        document.querySelector('.role-btn:nth-child(3)').classList.add('active');
+        renderAdminDashboard();
+    }
+}
+
+// ==================== 学生端功能 ====================
+function renderStudentHome(){
+    document.getElementById('stu-title').innerText='🏠 校园宿舍报修';
+    document.getElementById('stu-body').innerHTML=`
+        <div class="grid-2">
+            <div class="card" onclick="renderStudentSubmit()" style="text-align:center;cursor:pointer">
+                <div style="font-size:32px">📝</div>
+                <div style="font-weight:600;margin-top:8px">我要报修</div>
+                <div style="font-size:12px;color:#999">提交维修申请</div>
             </div>
-            <div class="card" style="text-align:center;cursor:pointer" onclick="renderStuList()">
-                <div style="font-size:30px">📋</div>
-                <div style="font-size:13px;font-weight:600">我的报修</div>
+            <div class="card" onclick="renderStudentList()" style="text-align:center;cursor:pointer">
+                <div style="font-size:32px">📋</div>
+                <div style="font-weight:600;margin-top:8px">我的报修</div>
+                <div style="font-size:12px;color:#999">查看进度与评价</div>
             </div>
         </div>
-        <div style="font-size:14px;font-weight:600;margin-bottom:8px">待处理工单</div>
-        <div class="card" onclick="renderStuDetail()" style="cursor:pointer">
+        <div style="font-size:15px;font-weight:600;margin:16px 0 8px">待处理工单</div>
+        <div class="card" onclick="renderStudentDetail('progress')" style="cursor:pointer">
             <div class="card-row"><span>🔧 水电故障</span><span class="tag tag-progress">维修中</span></div>
-            <div style="font-size:12px;color:#666">3栋512室 | 06-23 14:30</div>
+            <div style="font-size:13px;color:#666">宿舍3栋512室</div>
+            <div style="font-size:12px;color:#999">2026-06-24 10:30</div>
+        </div>
+        <div class="card" onclick="renderStudentDetail('done')" style="cursor:pointer">
+            <div class="card-row"><span>🔨 家具损坏</span><span class="tag tag-done">已完成</span></div>
+            <div style="font-size:13px;color:#666">宿舍5栋203室</div>
+            <div style="font-size:12px;color:#999">2026-06-23 09:15</div>
         </div>`;
 }
 
-function renderStuSubmit(){
-    document.getElementById('stuTitle').textContent='📝 提交报修';
-    document.getElementById('stuBody').innerHTML=`
-        <div class="form-g"><label>报修类型</label><select><option>🔧 水电故障</option><option>🔨 家具损坏</option></select></div>
-        <div class="form-g"><label>故障位置</label><input value="宿舍3栋 512室"></div>
-        <div class="form-g"><label>故障描述</label><textarea>灯管不亮，影响照明</textarea></div>
-        <button class="btn btn-primary" onclick="showToast('✅ 提交成功！REP20260623001');renderStuList()">提交报修</button>
-        <button class="btn btn-line" onclick="renderStuHome()">返回</button>`;
+function renderStudentSubmit(){
+    document.getElementById('stu-title').innerText='📝 提交报修';
+    document.getElementById('stu-body').innerHTML=`
+        <div class="form-group"><label>报修类型 *</label><select><option>🔧 水电故障</option><option>🔨 家具损坏</option><option>🚪 门窗锁具</option><option>🖥 网络通讯</option></select></div>
+        <div class="form-group"><label>故障位置 *</label><select><option>宿舍3栋</option></select><input style="margin-top:6px" value="512室"></div>
+        <div class="form-group"><label>故障描述 *</label><textarea placeholder="请详细描述故障情况...">宿舍灯管不亮，影响学习</textarea></div>
+        <div class="form-group"><label>联系电话</label><input value="138****5678"></div>
+        <button class="btn btn-primary" onclick="showToast('✅ 提交成功！报修单号：REP20260624001');renderStudentList();">提交报修</button>
+        <button class="btn btn-outline" onclick="renderStudentHome()">返回首页</button>`;
 }
 
-function renderStuList(){
-    document.getElementById('stuTitle').textContent='📋 我的报修';
-    document.getElementById('stuBody').innerHTML=`
-        <div class="card" onclick="renderStuDetail()" style="cursor:pointer">
-            <div class="card-row"><span>REP20260623001</span><span class="tag tag-progress">维修中</span></div>
-            <div style="font-size:12px;color:#666">🔧 水电故障 - 3栋512室</div>
+function renderStudentList(){
+    document.getElementById('stu-title').innerText='📋 我的报修';
+    document.getElementById('stu-body').innerHTML=`
+        <div style="display:flex;gap:8px;margin-bottom:12px;overflow-x:auto">
+            <span class="tag tag-progress" style="cursor:pointer">全部</span>
+            <span style="padding:3px 10px;font-size:12px;color:#999">待派单</span>
+            <span style="padding:3px 10px;font-size:12px;color:#999">维修中</span>
+            <span style="padding:3px 10px;font-size:12px;color:#999">已完成</span>
         </div>
-        <div class="card" onclick="renderStuDetail2()" style="cursor:pointer">
-            <div class="card-row"><span>REP20260622015</span><span class="tag tag-done">已完成</span></div>
-            <div style="font-size:12px;color:#666">🔨 家具损坏 - 5栋203室</div>
+        <div class="card" onclick="renderStudentDetail('progress')" style="cursor:pointer">
+            <div class="card-row"><span>REP20260624001</span><span class="tag tag-progress">维修中</span></div>
+            <div style="font-size:13px;color:#666">🔧 水电故障 - 3栋512</div><div style="font-size:12px;color:#999">06-24 10:30</div>
         </div>
-        <button class="btn btn-line" onclick="renderStuHome()">返回首页</button>`;
+        <div class="card" onclick="renderStudentDetail('done')" style="cursor:pointer">
+            <div class="card-row"><span>REP20260623015</span><span class="tag tag-done">已完成</span></div>
+            <div style="font-size:13px;color:#666">🔨 家具损坏 - 5栋203</div><div style="font-size:12px;color:#999">06-23 09:15</div>
+        </div>
+        <button class="btn btn-outline" onclick="renderStudentHome()">返回首页</button>`;
 }
 
-function renderStuDetail(){
-    document.getElementById('stuTitle').textContent='📋 报修详情';
-    document.getElementById('stuBody').innerHTML=`
-        <div class="card"><b>REP20260623001</b> <span class="tag tag-progress">维修中</span><br>🔧 水电故障 | 3栋512室 | 灯管不亮</div>
-        <div class="card">维修人员：张师傅 📞 139****1111</div>
-        <div style="font-weight:600;font-size:14px;margin:10px 0">处理进度</div>
-        <div class="timeline">
-            <div class="timeline-item done"><div class="tl-title">提交报修</div><div class="tl-time">06-23 14:30</div></div>
-            <div class="timeline-item done"><div class="tl-title">已派单</div><div class="tl-time">06-23 14:35</div></div>
-            <div class="timeline-item cur"><div class="tl-title" style="color:#1677FF">维修中</div><div class="tl-time">06-23 15:10</div></div>
-            <div class="timeline-item wait"><div class="tl-title" style="color:#999">维修完成</div></div>
-        </div>
-        <button class="btn btn-line" onclick="renderStuList()">返回列表</button>`;
-}
-function renderStuDetail2(){
-    document.getElementById('stuTitle').textContent='📋 报修详情';
-    document.getElementById('stuBody').innerHTML=`
-        <div class="card"><b>REP20260622015</b> <span class="tag tag-done">已完成</span><br>🔨 家具损坏 | 5栋203室 | 椅子腿断裂</div>
-        <div class="timeline">
-            <div class="timeline-item done"><div class="tl-title">提交报修</div><div class="tl-time">06-22 09:15</div></div>
-            <div class="timeline-item done"><div class="tl-title">已派单</div></div>
-            <div class="timeline-item done"><div class="tl-title">维修中</div></div>
-            <div class="timeline-item done"><div class="tl-title">维修完成</div><div class="tl-time">06-22 11:30</div></div>
-        </div>
-        <button class="btn btn-primary" onclick="showToast('✅ 评价成功！感谢反馈')">去评价</button>
-        <button class="btn btn-line" onclick="renderStuList()">返回列表</button>`;
+function renderStudentDetail(type){
+    if(type==='progress'){
+        document.getElementById('stu-title').innerText='📋 报修详情';
+        document.getElementById('stu-body').innerHTML=`
+            <div class="card"><b>REP20260624001</b> <span class="tag tag-progress">维修中</span><br>🔧 水电故障 | 3栋512 | 灯管不亮</div>
+            <div class="card">维修人员：张师傅 📞 139****1111</div>
+            <div style="font-weight:600;margin:12px 0 6px">处理进度</div>
+            <div class="timeline">
+                <div class="timeline-item done"><div class="tl-title">提交报修</div><div class="tl-time">06-24 10:30</div></div>
+                <div class="timeline-item done"><div class="tl-title">已派单 - 张师傅</div><div class="tl-time">06-24 10:35</div></div>
+                <div class="timeline-item cur"><div class="tl-title" style="color:#1677ff">维修中</div><div class="tl-time">06-24 11:10</div></div>
+                <div class="timeline-item wait"><div class="tl-title" style="color:#999">维修完成</div></div>
+                <div class="timeline-item wait"><div class="tl-title" style="color:#999">服务评价</div></div>
+            </div>
+            <button class="btn btn-outline" onclick="renderStudentList()">返回列表</button>`;
+    }else{
+        document.getElementById('stu-title').innerText='📋 报修详情';
+        document.getElementById('stu-body').innerHTML=`
+            <div class="card"><b>REP20260623015</b> <span class="tag tag-done">已完成</span><br>🔨 家具损坏 | 5栋203 | 椅子腿断裂</div>
+            <div class="timeline">
+                <div class="timeline-item done"><div class="tl-title">提交报修</div><div class="tl-time">06-23 09:15</div></div>
+                <div class="timeline-item done"><div class="tl-title">已派单</div></div>
+                <div class="timeline-item done"><div class="tl-title">维修中</div></div>
+                <div class="timeline-item done"><div class="tl-title">维修完成</div><div class="tl-time">06-23 11:30</div></div>
+            </div>
+            <button class="btn btn-primary" onclick="renderStudentEval()">⭐ 去评价</button>
+            <button class="btn btn-outline" onclick="renderStudentList()">返回列表</button>`;
+    }
 }
 
-// ==== 维修端 ====
-function renderRepHome(){
-    document.getElementById('repTitle').textContent='🔧 维修端 - 工单大厅';
-    document.getElementById('repBody').innerHTML=`
-        <div class="card">
-            <span style="position:absolute;top:6px;right:8px;background:#FF4D4F;color:#fff;padding:2px 6px;border-radius:8px;font-size:10px">新</span>
+function renderStudentEval(){
+    document.getElementById('stu-title').innerText='⭐ 服务评价';
+    document.getElementById('stu-body').innerHTML=`
+        <div style="text-align:center;margin:8px 0"><span class="stars">★★★★★</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+            <span style="padding:6px 14px;background:#e6f4ff;color:#1677ff;border-radius:20px;font-size:13px">响应快速</span>
+            <span style="padding:6px 14px;background:#e6f4ff;color:#1677ff;border-radius:20px;font-size:13px">维修质量好</span>
+            <span style="padding:6px 14px;border:1px solid #d9d9d9;border-radius:20px;font-size:13px">服务态度好</span>
+        </div>
+        <textarea style="width:100%;min-height:60px;border-radius:8px;border:1px solid #ddd;padding:10px;font-family:inherit" placeholder="说说您的感受...">维修很快，师傅很专业</textarea>
+        <button class="btn btn-primary" onclick="showToast('✅ 评价成功！感谢反馈');renderStudentList();">提交评价</button>`;
+}
+
+// ==================== 维修端功能 ====================
+function renderRepairerHome(){
+    document.getElementById('rep-title').innerText='🔧 工单大厅';
+    document.getElementById('rep-body').innerHTML=`
+        <div class="card" style="position:relative">
+            <span style="position:absolute;top:6px;right:8px;background:#ff4d4f;color:#fff;padding:2px 6px;border-radius:8px;font-size:10px">新</span>
             <div class="card-row"><span>🔧 水电故障</span><span class="tag tag-pending">待接单</span></div>
-            <div style="font-size:12px;color:#666">3栋512室 | 5分钟前</div>
-            <button class="btn btn-primary" onclick="repAccept()">确认接单</button>
+            <div style="font-size:13px;color:#666">3栋512室 | 灯管不亮</div>
+            <div style="font-size:12px;color:#999">5分钟前</div>
+            <button class="btn btn-primary" onclick="repairerAccept()">确认接单</button>
         </div>
         <div class="card">
             <div class="card-row"><span>🔨 家具损坏</span><span class="tag tag-pending">待接单</span></div>
-            <div style="font-size:12px;color:#666">5栋203室 | 25分钟前</div>
-            <button class="btn btn-line" onclick="repAccept()">确认接单</button>
+            <div style="font-size:13px;color:#666">5栋203室 | 椅子腿断裂</div>
+            <div style="font-size:12px;color:#999">25分钟前</div>
+            <button class="btn btn-outline" onclick="repairerAccept()">确认接单</button>
         </div>`;
-}
-function repAccept(){
-    document.getElementById('repTitle').textContent='📋 我的工单';
-    document.getElementById('repBody').innerHTML=`
-        <div style="font-weight:600;margin-bottom:8px">维修中</div>
-        <div class="card">
-            <div class="card-row"><span>🔧 水电故障</span><span class="tag tag-progress">维修中</span></div>
-            <div style="font-size:12px;color:#666">3栋512室 | ⏱ 0小时35分</div>
-            <button class="btn btn-success" onclick="repDone()">完成维修</button>
-        </div>`;
-}
-function repDone(){
-    showToast('✅ 完工上报成功！');
-    document.getElementById('repBody').innerHTML=`<div style="text-align:center;padding:40px;color:#999">暂无待处理工单</div>`;
 }
 
-renderStuHome();renderRepHome();
+function repairerAccept(){
+    document.getElementById('rep-title').innerText='📋 我的工单';
+    document.getElementById('rep-body').innerHTML=`
+        <div style="font-weight:600;margin-bottom:10px">维修中</div>
+        <div class="card">
+            <div class="card-row"><span>🔧 水电故障</span><span class="tag tag-progress">维修中</span></div>
+            <div style="font-size:13px;color:#666">3栋512室 | ⏱ 已进行 0小时35分</div>
+            <button class="btn btn-success" onclick="repairerDone()">完成维修</button>
+        </div>`;
+}
+
+function repairerDone(){
+    showToast('✅ 完工上报成功！');
+    document.getElementById('rep-body').innerHTML=`<div style="text-align:center;padding:60px;color:#999">✅ 暂无待处理工单<br><button class="btn btn-outline" style="margin-top:16px" onclick="renderRepairerHome()">返回大厅</button></div>`;
+}
+
+// ==================== 管理后台功能 ====================
+function adminTab(page, el){
+    document.querySelectorAll('.admin-menu').forEach(m=>m.classList.remove('active'));
+    el.classList.add('active');
+    if(page==='dashboard') renderAdminDashboard();
+    else if(page==='orders') renderAdminOrders();
+    else if(page==='repairers') renderAdminRepairers();
+    else if(page==='statistics') renderAdminStatistics();
+    else if(page==='evaluations') renderAdminEvaluations();
+}
+
+function renderAdminDashboard(){
+    document.getElementById('admin-content').innerHTML=`
+        <h3>📊 仪表盘</h3>
+        <div class="grid-2" style="grid-template-columns:repeat(4,1fr);margin-bottom:16px">
+            <div class="stat-box"><div class="num">156</div><div class="lbl">本月报修</div></div>
+            <div class="stat-box"><div class="num">142</div><div class="lbl">已完成</div></div>
+            <div class="stat-box"><div class="num">91.0%</div><div class="lbl">完成率</div></div>
+            <div class="stat-box"><div class="num">4.3</div><div class="lbl">平均评分</div></div>
+        </div>
+        <h4>最近工单</h4>
+        <table><tr><th>编号</th><th>类型</th><th>位置</th><th>状态</th><th>维修人员</th></tr>
+        <tr><td>REP20260624001</td><td>水电故障</td><td>3栋512</td><td><span class="tag tag-progress">维修中</span></td><td>张师傅</td></tr>
+        <tr><td>REP20260624002</td><td>家具损坏</td><td>5栋203</td><td><span class="tag tag-pending">待派单</span></td><td>-</td></tr></table>`;
+}
+
+function renderAdminOrders(){
+    document.getElementById('admin-content').innerHTML=`
+        <h3>📋 工单管理</h3>
+        <table>
+            <tr><th>编号</th><th>类型</th><th>位置</th><th>状态</th><th>维修人员</th><th>操作</th></tr>
+            <tr><td>REP20260624001</td><td>水电故障</td><td>3栋512</td><td><span class="tag tag-progress">维修中</span></td><td>张师傅</td><td>-</td></tr>
+            <tr style="background:#fffbe6"><td>REP20260624002</td><td>家具损坏</td><td>5栋203</td><td><span class="tag tag-pending">待派单</span></td><td>-</td>
+                <td><button onclick="showToast('✅ 已派单给李师傅')" style="background:#1677ff;color:#fff;border:none;padding:6px 14px;border-radius:4px;cursor:pointer">派单</button></td></tr>
+            <tr><td>REP20260623015</td><td>家具损坏</td><td>5栋203</td><td><span class="tag tag-done">已完成</span></td><td>李师傅</td><td>-</td></tr>
+        </table>`;
+}
+
+function renderAdminRepairers(){
+    document.getElementById('admin-content').innerHTML=`
+        <h3>👨‍🔧 人员管理 <button onclick="showToast('✅ 新增成功（模拟）')" style="background:#1677ff;color:#fff;border:none;padding:6px 14px;border-radius:4px;cursor:pointer;float:right">+ 新增</button></h3>
+        <table>
+            <tr><th>姓名</th><th>电话</th><th>技能</th><th>区域</th><th>评分</th><th>状态</th></tr>
+            <tr><td>张师傅</td><td>13900001111</td><td>水电、木工</td><td>东区</td><td>⭐4.8</td><td style="color:#52c41a">● 在岗</td></tr>
+            <tr><td>李师傅</td><td>13900002222</td><td>水电、制冷</td><td>西区</td><td>⭐4.5</td><td style="color:#52c41a">● 在岗</td></tr>
+        </table>`;
+}
+
+function renderAdminStatistics(){
+    document.getElementById('admin-content').innerHTML=`
+        <h3>📈 统计分析</h3>
+        <div class="grid-2" style="grid-template-columns:repeat(4,1fr);margin-bottom:16px">
+            <div class="stat-box"><div class="num">156</div><div class="lbl">总报修</div></div>
+            <div class="stat-box"><div class="num">91%</div><div class="lbl">完成率</div></div>
+            <div class="stat-box"><div class="num">28min</div><div class="lbl">平均响应</div></div>
+            <div class="stat-box"><div class="num">4.3</div><div class="lbl">平均评分</div></div>
+        </div>
+        <p style="color:#999;text-align:center;padding:40px">📊 此处可展示ECharts图表（课程演示中可用截图替代）</p>
+        <button onclick="showToast('📥 报表已导出（模拟）')" style="background:#1677ff;color:#fff;border:none;padding:8px 20px;border-radius:6px;cursor:pointer">导出Excel</button>`;
+}
+
+function renderAdminEvaluations(){
+    document.getElementById('admin-content').innerHTML=`
+        <h3>⭐ 评价管理</h3>
+        <table>
+            <tr><th>工单编号</th><th>学生</th><th>维修人员</th><th>评分</th><th>内容</th><th>状态</th></tr>
+            <tr><td>REP20260623015</td><td>黎同学</td><td>李师傅</td><td>⭐⭐⭐⭐⭐</td><td>维修很快</td><td>正常</td></tr>
+            <tr style="background:#fff1f0"><td>REP20260621003</td><td>王同学</td><td>张师傅</td><td>⭐⭐</td><td>态度不好</td><td><button onclick="showToast('已标记为已处理')" style="background:#ff4d4f;color:#fff;border:none;padding:4px 10px;border-radius:4px;cursor:pointer">处理差评</button></td></tr>
+        </table>`;
+}
+
+// 初始化
+renderStudentHome();
+renderRepairerHome();
+renderAdminDashboard();
 </script>
 </body>
 </html>
